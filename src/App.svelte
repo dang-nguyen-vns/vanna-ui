@@ -211,12 +211,12 @@
           .join("&");
 
         response = await fetch(
-          `http://localhost:8084/api/v0/${endpoint}?${queryString}`
+          `http://192.168.1.142:8084/api/v0/${endpoint}?${queryString}`
         );
       } else {
         let jsonArgs = JSON.stringify(args);
 
-        response = await fetch(`http://localhost:8084/api/v0/${endpoint}`, {
+        response = await fetch(`http://192.168.1.142:8084/api/v0/${endpoint}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
