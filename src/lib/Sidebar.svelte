@@ -18,12 +18,12 @@
     class="hs-accordion-group w-full h-full flex flex-col"
     data-hs-accordion-always-open
   >
-    <div class="flex items-center justify-between py-4 pr-4 pl-7">
+    <div class="flex items-center justify-center py-4 pr-4 pl-7">
       <!-- Logo -->
       <img
         class="w-28 h-auto"
-        src="../assets/company_logo.svg"
-        alt="company_logo Logo"
+        src="/company_logo.png"
+        alt="company_logo.png Logo"
       />
       <!-- End Logo -->
 
@@ -138,8 +138,8 @@
     <div class="mt-auto">
       <div class="py-2.5 px-7">
         <p class="inline-flex items-center gap-x-2 text-xs text-green-600">
-          <span class="block w-1.5 h-1.5 rounded-full bg-green-600"></span>
-          Connected
+          <span class="block w-1.5 h-1.5 rounded-full"></span>
+          v0.7.6
         </p>
       </div>
 
@@ -148,7 +148,7 @@
           class="flex justify-between items-center gap-x-3 py-2 px-3 text-sm text-slate-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-slate-400 dark:hover:text-slate-300"
           href="#replace"
         >
-          Sign out
+          Logout
           <svg
             class="w-3.5 h-3.5"
             xmlns="http://www.w3.org/2000/svg"

@@ -10,7 +10,7 @@ export default {
     "./src/*.html",
     "node_modules/preline/dist/*.js",
   ],
-  // darkMode: 'class',
+  darkMode: 'none',
   theme: {
     extend: {},
   },
