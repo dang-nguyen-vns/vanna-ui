@@ -32,13 +32,17 @@
   onMount(async () => {
     getQuestionHistory();
 
+    // Load suggested questions immediately on mount
+    newApiRequest("generate_questions", "GET", []).then(setSuggestedQuestions);
+
     // Check the URL to see what page we're on
     const url = new URL(window.location.href);
     const page = url.hash.slice(1);
     if (page === "training-data") {
       getTrainingData();
     } else {
-      newQuestionPage();
+      currentPage = "chat";
+      window.location.hash = "";
     }
   });
 
@@ -126,12 +130,6 @@
     window.location.hash = "";
     currentPage = "chat";
     clearMessages();
-
-    if (!suggestedQuestions) {
-      newApiRequest("generate_questions", "GET", []).then(
-        setSuggestedQuestions
-      );
-    }
   }
 
   function loadQuestionPage(id: string) {
@@ -211,18 +209,21 @@
           .join("&");
 
         response = await fetch(
-          `http://192.168.1.142:8084/api/v0/${endpoint}?${queryString}`
+          `${import.meta.env.VITE_API_URL}/api/v0/${endpoint}?${queryString}`
         );
       } else {
         let jsonArgs = JSON.stringify(args);
 
-        response = await fetch(`http://192.168.1.142:8084/api/v0/${endpoint}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: jsonArgs,
-        });
+        response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/v0/${endpoint}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: jsonArgs,
+          }
+        );
       }
 
       if (!response.ok) {

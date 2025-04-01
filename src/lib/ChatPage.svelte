@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type { MessageContents } from "./types";
   import UserMessage from "./UserMessage.svelte";
   import AgentResponse from "./AgentResponse.svelte";
@@ -14,11 +15,10 @@
   import TextInput from "./TextInput.svelte";
   import Error from "./Error.svelte";
   import CodeBlock from "./CodeBlock.svelte";
-  import Feedback from "./Feedback.svelte";
   import SqlInput from "./SqlInput.svelte";
 
   export let suggestedQuestions: MessageContents | null = null;
-  export let messageLog: MessageContents[];
+  export let messageLog: MessageContents[] = [];
   export let newQuestion: (question: string) => void;
   export let rerunSql: (id: string) => void;
   export let clearMessages: () => void;
@@ -26,25 +26,80 @@
   export let question_asked: boolean;
   export let marked_correct: boolean | null;
   export let thinking: boolean;
+
+  let inputValue = "";
+  let pendingQuestion: string | null = null;
+  let previousLength = 0;
+
+  function saveToHistory(question: string, log: MessageContents[]) {
+    const id = `q_${Date.now()}`;
+    let history: Record<string, { question: string; log: MessageContents[] }> =
+      {};
+
+    try {
+      const existing = localStorage.getItem("chat_history");
+      if (existing) {
+        history = JSON.parse(existing);
+      }
+    } catch (e) {
+      console.error("Failed to parse chat history", e);
+    }
+
+    history[id] = { question, log: [...log] };
+    localStorage.setItem("chat_history", JSON.stringify(history));
+  }
+
+  function handleNewQuestion(question: string) {
+    pendingQuestion = question;
+    previousLength = messageLog.length;
+    newQuestion(question);
+    inputValue = "";
+  }
+
+  $: {
+    if (pendingQuestion && messageLog.length > previousLength) {
+      saveToHistory(pendingQuestion, [...messageLog]);
+      pendingQuestion = null;
+      previousLength = messageLog.length;
+    }
+  }
+
+  onMount(() => {
+    const historyStr = localStorage.getItem("chat_history");
+    if (historyStr) {
+      const history = JSON.parse(historyStr);
+      const ordered = Object.entries(history)
+        .sort(
+          ([a], [b]) => parseInt(b.split("_")[1]) - parseInt(a.split("_")[1])
+        )
+        .map(([key, value]) => ({ id: key, ...value }));
+      console.log("Ordered chat history:", ordered);
+    }
+  });
 </script>
 
-<!-- Content -->
-<div class="relative h-screen w-full lg:pl-64">
-  <div class="py-10 lg:py-14 h-[calc(100vh-1rem)] overflow-y-auto pb-24px">
+<div
+  class="h-screen w-full lg:pl-64 flex flex-col bg-gray-50 dark:bg-slate-900"
+>
+  <div class="flex-1 overflow-y-auto px-4 pb-4">
     <Title />
 
     {#if suggestedQuestions && suggestedQuestions.type == "question_list" && !question_asked}
       <AgentResponse>
         <Text>
-          {suggestedQuestions.header}
-          {#each suggestedQuestions.questions as question}
-            <InChatButton message={question} onSubmit={newQuestion} />
-          {/each}
+          <div class="mb-3 font-semibold text-slate-700 dark:text-slate-200">
+            {suggestedQuestions.header}
+          </div>
+          <div class="flex flex-wrap gap-2">
+            {#each suggestedQuestions.questions as question}
+              <InChatButton message={question} onSubmit={handleNewQuestion} />
+            {/each}
+          </div>
         </Text>
       </AgentResponse>
     {/if}
 
-    <ul class="mt-16 space-y-5">
+    <ul class="mt-8 space-y-6">
       {#each messageLog as message}
         {#if message.type === "user_question"}
           <UserMessage message={message.question} />
@@ -54,15 +109,6 @@
               <CodeBlock>
                 <SlowReveal text={message.text} />
               </CodeBlock>
-            </Text>
-          </AgentResponse>
-        {:else if message.type === "question_list"}
-          <AgentResponse>
-            <Text>
-              {message.header}
-              {#each message.questions as question}
-                <InChatButton message={question} onSubmit={newQuestion} />
-              {/each}
             </Text>
           </AgentResponse>
         {:else if message.type === "df"}
@@ -76,14 +122,16 @@
           <AgentResponse>
             <Text>Were the results correct?</Text>
             {#if marked_correct === null}
-              <InChatButton
-                message="Yes"
-                onSubmit={() => (marked_correct = true)}
-              />
-              <InChatButton
-                message="No"
-                onSubmit={() => (marked_correct = false)}
-              />
+              <div class="flex gap-2 mt-2">
+                <InChatButton
+                  message="Yes"
+                  onSubmit={() => (marked_correct = true)}
+                />
+                <InChatButton
+                  message="No"
+                  onSubmit={() => (marked_correct = false)}
+                />
+              </div>
             {/if}
           </AgentResponse>
           {#if marked_correct === true}
@@ -98,11 +146,7 @@
         {:else if message.type === "question_cache"}
           <UserMessage message={message.question} />
           <AgentResponse>
-            <Text>
-              <CodeBlock>
-                {message.sql}
-              </CodeBlock>
-            </Text>
+            <Text><CodeBlock>{message.sql}</CodeBlock></Text>
           </AgentResponse>
           <AgentResponse>
             <DataFrame id={message.id} df={message.df} />
@@ -114,12 +158,6 @@
           <UserMessage message="Put your SQL here">
             <SqlInput onSubmit={onUpdateSql} />
           </UserMessage>
-        {:else}
-          <AgentResponse>
-            <Text>
-              {JSON.stringify(message)}
-            </Text>
-          </AgentResponse>
         {/if}
       {/each}
 
@@ -129,10 +167,11 @@
     </ul>
   </div>
 
-  <!-- Search -->
-  <footer class="max-w-4xl mx-auto sticky bottom-0 z-10 p-3 sm:py-6">
-    <SidebarToggleButton />
-    <div class="space-y-3">
+  <footer
+    class="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 sticky bottom-0 w-full z-10 p-4"
+  >
+    <div class="max-w-4xl mx-auto space-y-3">
+      <SidebarToggleButton />
       {#if question_asked}
         <div class="flex gap-2">
           {#each messageLog as msg}
@@ -146,9 +185,13 @@
           {/each}
         </div>
       {/if}
-      <TextInput onSubmit={newQuestion} />
+      <div class="w-full">
+        <TextInput
+          onSubmit={handleNewQuestion}
+          bind:value={inputValue}
+          class="w-full"
+        />
+      </div>
     </div>
   </footer>
-  <!-- End Search -->
 </div>
-<!-- End Content -->

@@ -6,6 +6,7 @@
     if (event.key === "Enter") {
       onSubmit(newMessage);
       event.preventDefault(); // prevent any default action
+      newMessage = "";
     }
   }
 

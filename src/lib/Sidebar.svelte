@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SlowReveal from "./SlowReveal.svelte";
+  import { onMount } from "svelte";
   import type { QuestionLink } from "./types";
 
   export let getTrainingData: () => void;
@@ -7,6 +7,14 @@
   export let loadQuestionPage: (id: string) => void;
 
   export let questionHistory: QuestionLink[];
+
+  // Derived store or computed property to get the top 5 most recent questions
+  $: recentQuestions = questionHistory
+    .sort((a, b) => {
+      // Assuming 'a.id' or 'a.timestamp' is the identifier for sorting
+      return b.id - a.id; // Sorting in descending order based on ID (recent questions first)
+    })
+    .slice(0, 5); // Get the top 5 questions
 </script>
 
 <!-- Sidebar -->
@@ -18,15 +26,61 @@
     class="hs-accordion-group w-full h-full flex flex-col"
     data-hs-accordion-always-open
   >
-    <div class="flex items-center justify-center py-4 pr-4 pl-7">
+    <div class="flex flex-col items-center justify-center py-4 pr-4 pl-4">
       <!-- Logo -->
       <img
         class="w-28 h-auto"
         src="/company_logo.png"
         alt="company_logo.png Logo"
       />
+      <p class="py-2 font-medium text-sky-600 text-lg text-center">
+        Department of Agriculture
+      </p>
       <!-- End Logo -->
 
+      <!-- Custom Buttons -->
+      <div class="flex flex-col space-y-2 w-full mt-4 px-4">
+        <button
+          class="flex items-center justify-center gap-2 border border-sky-400 text-sky-600 rounded-lg bg-sky-50 px-4 py-2 text-sm font-medium hover:bg-sky-100 transition"
+          on:click={() => console.log("Agriculture Wiki")}
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
+            />
+          </svg>
+          Agriculture Wiki
+        </button>
+
+        <button
+          class="flex items-center justify-center gap-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-sm font-medium transition"
+          on:click={() => console.log("Durian Traceability")}
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 9l6 6 6-6"
+            />
+          </svg>
+          Durian Traceability
+        </button>
+      </div>
+      <!-- End Custom Buttons -->
       <!-- Sidebar Toggle -->
       <div class="lg:hidden">
         <button
@@ -79,12 +133,12 @@
             Training Data
           </button>
         </li>
-        {#each questionHistory as q}
+
+        <!-- Display top 5 most recent questions -->
+        {#each recentQuestions as q}
           <li>
             <button
-              on:click={() => {
-                loadQuestionPage(q.id);
-              }}
+              on:click={() => loadQuestionPage(q.id)}
               class="flex items-center text-left gap-x-3 py-2 px-3 text-sm text-slate-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-900 dark:text-slate-400 dark:hover:text-slate-300"
             >
               <svg
@@ -115,7 +169,7 @@
       <div class="py-2.5 px-7">
         <p class="inline-flex items-center gap-x-2 text-xs text-green-600">
           <span class="block w-1.5 h-1.5 rounded-full"></span>
-          v0.7.6
+          v0.0.1
         </p>
       </div>
 
