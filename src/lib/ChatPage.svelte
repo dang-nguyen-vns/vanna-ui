@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { MessageContents } from "./types";
+  import type { MessageContents } from "./types.ts";
   import UserMessage from "./UserMessage.svelte";
   import AgentResponse from "./AgentResponse.svelte";
   import Text from "./Text.svelte";
@@ -31,8 +31,11 @@
   let pendingQuestion: string | null = null;
   let previousLength = 0;
 
+  // 🔁 Reactively derive the current chat ID from hash
+  $: chatId = location.hash || "#default";
+
+  // ✅ Save the log into localStorage keyed by hash
   function saveToHistory(question: string, log: MessageContents[]) {
-    const id = `q_${Date.now()}`;
     let history: Record<string, { question: string; log: MessageContents[] }> =
       {};
 
@@ -45,10 +48,11 @@
       console.error("Failed to parse chat history", e);
     }
 
-    history[id] = { question, log: [...log] };
+    history[chatId] = { question, log: [...log] };
     localStorage.setItem("chat_history", JSON.stringify(history));
   }
 
+  // 👇 Called on submit
   function handleNewQuestion(question: string) {
     pendingQuestion = question;
     previousLength = messageLog.length;
@@ -56,6 +60,7 @@
     inputValue = "";
   }
 
+  // 📦 Save to history when new message comes in
   $: {
     if (pendingQuestion && messageLog.length > previousLength) {
       saveToHistory(pendingQuestion, [...messageLog]);
@@ -64,16 +69,14 @@
     }
   }
 
+  // 🔄 Load saved history on page mount based on hash
   onMount(() => {
     const historyStr = localStorage.getItem("chat_history");
     if (historyStr) {
       const history = JSON.parse(historyStr);
-      const ordered = Object.entries(history)
-        .sort(
-          ([a], [b]) => parseInt(b.split("_")[1]) - parseInt(a.split("_")[1])
-        )
-        .map(([key, value]) => ({ id: key, ...value }));
-      console.log("Ordered chat history:", ordered);
+      if (history[chatId]) {
+        messageLog = [...history[chatId].log];
+      }
     }
   });
 </script>

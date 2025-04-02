@@ -136,7 +136,9 @@
                   d="M7.5 8.25h9M3 11.25c0 1.6 1.123 2.994 2.707 3.227a48.33 48.33 0 003.423.379c.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741V11.25z"
                 />
               </svg>
-              <span class="truncate overflow-hidden whitespace-nowrap flex-1">
+              <span
+                class="truncate overflow-hidden whitespace-nowrap flex-1 text-left"
+              >
                 {q.question}
               </span>
             </button>

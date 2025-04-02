@@ -65,7 +65,7 @@
   }
 
   function newQuestion(question: string) {
-    clearMessages();
+    // clearMessages();
     addMessage({ type: "user_question", question: question });
     question_asked = true;
     newApiRequest("generate_sql", "GET", { question: question })
@@ -80,6 +80,7 @@
                 newApiRequest("generate_plotly_figure", "GET", { id: msg.id })
                   .then(addMessage)
                   .then((msg: MessageContents) => {
+                    debugger;
                     if (msg.type === "plotly_figure") {
                       questionHistory = [
                         ...questionHistory,
@@ -150,6 +151,7 @@
   }
 
   function addMessage(msg: MessageContents): MessageContents {
+    debugger;
     messageLog = [...messageLog, msg];
     scrollToBottom();
     return msg;
