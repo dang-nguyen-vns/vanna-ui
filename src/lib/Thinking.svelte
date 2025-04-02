@@ -10,6 +10,6 @@
   />
 
   <div class="space-y-3">
-    <Text>Loading...</Text>
+    <Text>Thinking...</Text>
   </div>
 </li>

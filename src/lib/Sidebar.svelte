@@ -24,7 +24,7 @@
     data-hs-accordion-always-open
   >
     <!-- Header -->
-    <div class="flex flex-col items-center px-4 py-6">
+    <div class="flex flex-col items-center pl-4 pr-4 py-6">
       <img src="/company_logo.png" alt="Company Logo" class="w-28 h-auto" />
       <p class="text-xl font-semibold text-blue-600 mt-2 text-center">
         Department of Agriculture
@@ -36,19 +36,7 @@
           class="flex items-center gap-2 border border-sky-400 text-sky-600 bg-sky-50 hover:bg-sky-100 rounded-lg px-4 py-2 text-sm font-medium transition"
           on:click={() => console.log("Agriculture Wiki")}
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"
-            />
-          </svg>
+          <!-- icon -->
           Agriculture Wiki
         </button>
 
@@ -56,20 +44,30 @@
           class="flex items-center gap-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-sm font-medium transition"
           on:click={() => console.log("Durian Traceability")}
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M6 9l6 6 6-6"
-            />
-          </svg>
+          <!-- icon -->
           Durian Traceability
+        </button>
+
+        <button
+          class="flex items-center gap-2 text-white bg-blue-500 hover:bg-blue-600 rounded-lg px-4 py-2 text-sm font-medium transition"
+          on:click={() => newQuestionPage()}
+        >
+          <span class="p-1 bg-white bg-opacity-20 rounded-full">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </span>
+          New
         </button>
       </div>
 
@@ -99,7 +97,7 @@
             class="flex items-center gap-2 w-full py-2 px-3 text-sm text-slate-700 hover:bg-gray-100 rounded-md dark:text-slate-300 dark:hover:bg-gray-900"
           >
             <svg
-              class="w-4 h-4"
+              class="w-4 h-4 shrink-0 flex-none"
               fill="none"
               stroke="currentColor"
               stroke-width="1.5"
@@ -108,10 +106,14 @@
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
-                d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347M6.75 15v-3.675A55.378 55.378 0 0112 8.443"
+                d="M3 6c0 1.657 4.03 3 9 3s9-1.343 9-3m-18 0c0-1.657 4.03-3 9-3s9 1.343 9 3m-18 0v4.5c0 1.657 4.03 3 9 3s9-1.343 9-3V6m-18 4.5v4.5c0 1.657 4.03 3 9 3s9-1.343 9-3v-4.5"
               />
             </svg>
-            Training Data
+            <span
+              class="truncate overflow-hidden whitespace-nowrap flex-1 text-left"
+            >
+              Training Data
+            </span>
           </button>
         </li>
 
@@ -122,7 +124,7 @@
               class="flex items-center gap-2 w-full py-2 px-3 text-sm text-slate-700 hover:bg-gray-100 rounded-md dark:text-slate-300 dark:hover:bg-gray-900"
             >
               <svg
-                class="w-4 h-4"
+                class="w-4 h-4 shrink-0 flex-none"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="1.5"
@@ -134,7 +136,9 @@
                   d="M7.5 8.25h9M3 11.25c0 1.6 1.123 2.994 2.707 3.227a48.33 48.33 0 003.423.379c.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741V11.25z"
                 />
               </svg>
-              {q.question}
+              <span class="truncate overflow-hidden whitespace-nowrap flex-1">
+                {q.question}
+              </span>
             </button>
           </li>
         {/each}
