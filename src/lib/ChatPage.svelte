@@ -79,7 +79,7 @@
 </script>
 
 <div
-  class="h-screen w-full lg:pl-64 flex flex-col bg-gray-50 dark:bg-slate-900"
+  class="h-screen w-full lg:pl-80 flex flex-col bg-gray-50 dark:bg-slate-900"
 >
   <div class="flex-1 overflow-y-auto px-4 pb-4">
     <Title />
