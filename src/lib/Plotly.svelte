@@ -1,16 +1,32 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+  import { onMount } from "svelte";
+  export let fig: string;
 
-    export let fig: string;
+  let figJson = JSON.parse(fig);
 
-    let figJson = JSON.parse(fig);
+  let id =
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
 
-    // Make a UUID for the div id
-    let id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-    onMount(() => {
-        Plotly.newPlot( document.getElementById(id), figJson, {responsive: true} )
+  onMount(() => {
+    Plotly.newPlot(id, figJson, {
+      responsive: true,
     });
+
+    // Handle resizing
+    const resizeHandler = () =>
+      Plotly.Plots.resize(document.getElementById(id));
+    window.addEventListener("resize", resizeHandler);
+
+    return () => window.removeEventListener("resize", resizeHandler);
+  });
 </script>
 
-<div id={id}></div>
+<div class="plot-container" {id}></div>
+
+<style>
+  .plot-container {
+    width: "500px";
+    height: "500px";
+  }
+</style>

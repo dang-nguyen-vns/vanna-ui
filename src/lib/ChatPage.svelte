@@ -121,6 +121,12 @@
         {:else if message.type === "plotly_figure"}
           <AgentResponse>
             <Plotly fig={message.fig} />
+            <p class="flex gap-2 w-full">
+              <GreenButton message="Redraw" onSubmit={() => {}} />
+              <GreenButton message="Pin to Dashboard" onSubmit={() => {}} />
+              <GreenButton message="Generate Report" onSubmit={() => {}} />
+              <!-- <GreenButton message="Generate Report" onSubmit={() => {}} /> -->
+            </p>
           </AgentResponse>
           <AgentResponse>
             <Text>Were the results correct?</Text>

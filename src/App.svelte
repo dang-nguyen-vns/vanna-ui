@@ -26,6 +26,7 @@
   import GreenButton from "./lib/GreenButton.svelte";
   import ChatPage from "./lib/ChatPage.svelte";
   import TrainingData from "./lib/TrainingData.svelte";
+  import { v4 } from "uuid";
 
   let message = "Loading...";
 
@@ -38,12 +39,15 @@
     // Check the URL to see what page we're on
     const url = new URL(window.location.href);
     const page = url.hash.slice(1);
-    if (page === "training-data") {
-      getTrainingData();
-    } else {
-      currentPage = "chat";
-      window.location.hash = "";
-    }
+    currentPage = "chat";
+    window.location.hash = "#" + v4();
+
+    // if (page === "training-data") {
+    //   getTrainingData();
+    // } else {
+    //   currentPage = "chat";
+    //   window.location.hash = "#" + v4();
+    // }
   });
 
   let messageLog: MessageContents[] = [];
@@ -80,7 +84,6 @@
                 newApiRequest("generate_plotly_figure", "GET", { id: msg.id })
                   .then(addMessage)
                   .then((msg: MessageContents) => {
-                    debugger;
                     if (msg.type === "plotly_figure") {
                       questionHistory = [
                         ...questionHistory,
@@ -151,7 +154,6 @@
   }
 
   function addMessage(msg: MessageContents): MessageContents {
-    debugger;
     messageLog = [...messageLog, msg];
     scrollToBottom();
     return msg;
