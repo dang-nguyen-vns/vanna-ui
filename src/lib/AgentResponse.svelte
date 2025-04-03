@@ -8,10 +8,7 @@
     alt="agent logo"
   />
 
-  <div
-    class="space-y-3 overflow-x-auto overflow-y-hidden"
-    style="width: 1100px;"
-  >
+  <div class="space-y-3 overflow-x-auto overflow-y-hidden" style="width: 100%;">
     <slot />
   </div>
 </li>
