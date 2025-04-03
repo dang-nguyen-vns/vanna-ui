@@ -34,7 +34,9 @@
       <div class="flex flex-col space-y-2 w-full mt-6">
         <button
           class="flex items-center gap-2 border border-sky-400 text-sky-600 bg-sky-50 hover:bg-sky-100 rounded-lg px-4 py-2 text-sm font-medium transition"
-          on:click={() => console.log("Agriculture Wiki")}
+          on:click={() => {
+            location.href = "http://192.168.1.86:8501";
+          }}
         >
           <svg
             width="12"

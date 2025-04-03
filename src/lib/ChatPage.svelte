@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import type { MessageContents } from "./types.ts";
   import UserMessage from "./UserMessage.svelte";
   import AgentResponse from "./AgentResponse.svelte";
@@ -26,10 +26,14 @@
   export let question_asked: boolean;
   export let marked_correct: boolean | null;
   export let thinking: boolean;
+  let visibleMessages: MessageContents[] = [];
 
   let inputValue = "";
   let pendingQuestion: string | null = null;
   let previousLength = 0;
+
+  let scrollTarget: HTMLDivElement;
+  let bottomAnchor: HTMLDivElement;
 
   // 🔁 Reactively derive the current chat ID from hash
   $: chatId = location.hash || "#default";
@@ -69,7 +73,6 @@
     }
   }
 
-  // 🔄 Load saved history on page mount based on hash
   onMount(() => {
     const historyStr = localStorage.getItem("chat_history");
     if (historyStr) {
@@ -103,7 +106,7 @@
     {/if}
 
     <ul class="mt-8 space-y-6">
-      {#each messageLog as message}
+      {#each messageLog as message, i}
         {#if message.type === "user_question"}
           <UserMessage message={message.question} />
         {:else if message.type === "sql"}
@@ -125,7 +128,7 @@
               <GreenButton message="Redraw" onSubmit={() => {}} />
               <GreenButton message="Pin to Dashboard" onSubmit={() => {}} />
               <GreenButton message="Generate Report" onSubmit={() => {}} />
-              <!-- <GreenButton message="Generate Report" onSubmit={() => {}} /> -->
+              <GreenButton message="Export" onSubmit={() => {}} />
             </p>
           </AgentResponse>
           <AgentResponse>
@@ -173,6 +176,8 @@
       {#if thinking}
         <Thinking />
       {/if}
+
+      <div bind:this={bottomAnchor} />
     </ul>
   </div>
 

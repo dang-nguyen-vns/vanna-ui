@@ -7,6 +7,7 @@
 
   // Extracting column names dynamically from the first record
   let columns = data.length > 0 ? Object.keys(data[0]) : [];
+  let show = false;
 </script>
 
 <!-- Create a dynamic table -->
