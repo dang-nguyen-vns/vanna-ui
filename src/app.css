@@ -1,3 +1,6 @@
 .nav-title {
   font-family: 'Roboto Slab', serif;
 }
+html {
+  font-size: 20px;
+}
