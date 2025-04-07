@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from "svelte";
+  import { onMount } from "svelte";
   import type { MessageContents } from "./types.ts";
   import UserMessage from "./UserMessage.svelte";
   import AgentResponse from "./AgentResponse.svelte";
@@ -11,28 +11,27 @@
   import Plotly from "./Plotly.svelte";
   import Thinking from "./Thinking.svelte";
   import SidebarToggleButton from "./SidebarToggleButton.svelte";
-  import GreenButton from "./GreenButton.svelte";
+  import GreenButton from "./ActionButton.svelte";
   import TextInput from "./TextInput.svelte";
   import Error from "./Error.svelte";
   import CodeBlock from "./CodeBlock.svelte";
   import SqlInput from "./SqlInput.svelte";
+  import { afterUpdate } from "svelte";
+  import { tick } from "svelte";
 
   export let suggestedQuestions: MessageContents | null = null;
   export let messageLog: MessageContents[] = [];
   export let newQuestion: (question: string) => void;
   export let rerunSql: (id: string) => void;
-  export let clearMessages: () => void;
   export let onUpdateSql: (sql: string) => void;
   export let question_asked: boolean;
   export let marked_correct: boolean | null;
   export let thinking: boolean;
-  let visibleMessages: MessageContents[] = [];
 
   let inputValue = "";
   let pendingQuestion: string | null = null;
   let previousLength = 0;
 
-  let scrollTarget: HTMLDivElement;
   let bottomAnchor: HTMLDivElement;
 
   // 🔁 Reactively derive the current chat ID from hash
@@ -62,6 +61,7 @@
     previousLength = messageLog.length;
     newQuestion(question);
     inputValue = "";
+    marked_correct = null;
   }
 
   // 📦 Save to history when new message comes in
@@ -81,6 +81,10 @@
         messageLog = [...history[chatId].log];
       }
     }
+  });
+
+  afterUpdate(() => {
+    bottomAnchor?.scrollIntoView({ behavior: "smooth" });
   });
 </script>
 
@@ -113,7 +117,7 @@
           <AgentResponse>
             <Text>
               <CodeBlock>
-                <SlowReveal text={message.text} />
+                {message.text}
               </CodeBlock>
             </Text>
           </AgentResponse>
@@ -177,7 +181,7 @@
         <Thinking />
       {/if}
 
-      <div bind:this={bottomAnchor} />
+      <div class="mt-2" bind:this={bottomAnchor} />
     </ul>
   </div>
 
@@ -200,11 +204,7 @@
         </div>
       {/if}
       <div class="w-full">
-        <TextInput
-          onSubmit={handleNewQuestion}
-          bind:value={inputValue}
-          class="w-full"
-        />
+        <TextInput onSubmit={handleNewQuestion} />
       </div>
     </div>
   </footer>

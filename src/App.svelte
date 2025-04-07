@@ -23,7 +23,7 @@
   import Text from "./lib/Text.svelte";
   import DataFrame from "./lib/DataFrame.svelte";
   import Plotly from "./lib/Plotly.svelte";
-  import GreenButton from "./lib/GreenButton.svelte";
+  import GreenButton from "./lib/ActionButton.svelte";
   import ChatPage from "./lib/ChatPage.svelte";
   import TrainingData from "./lib/TrainingData.svelte";
   import { v4 } from "uuid";
@@ -68,36 +68,58 @@
     marked_correct = null;
   }
 
-  function newQuestion(question: string) {
-    // clearMessages();
-    addMessage({ type: "user_question", question: question });
+  import { tick } from "svelte";
+
+  function delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function playMessageSequence(messages: MessageContents[]) {
+    for (const msg of messages) {
+      console.log("Adding message", msg, new Date().toISOString());
+
+      addMessage(msg);
+      await tick();
+      if (msg.type === "plotly_figure") await delay(2000);
+      await delay(1000); // adjust delay as needed
+    }
+  }
+
+  async function newQuestion(question: string) {
+    const messages: MessageContents[] = [];
+
+    messages.push({ type: "user_question", question });
     question_asked = true;
-    newApiRequest("generate_sql", "GET", { question: question })
-      .then(addMessage)
-      .then((msg: MessageContents) => {
-        if (msg.type === "sql") {
-          window.location.hash = msg.id;
-          newApiRequest("run_sql", "GET", { id: msg.id })
-            .then(addMessage)
-            .then((msg: MessageContents) => {
-              if (msg.type === "df") {
-                newApiRequest("generate_plotly_figure", "GET", { id: msg.id })
-                  .then(addMessage)
-                  .then((msg: MessageContents) => {
-                    if (msg.type === "plotly_figure") {
-                      questionHistory = [
-                        ...questionHistory,
-                        { question, id: msg.id },
-                      ];
-                      newApiRequest("generate_followup_questions", "GET", {
-                        id: msg.id,
-                      }).then(addMessage);
-                    }
-                  });
-              }
-            });
+
+    const sqlMsg = await newApiRequest("generate_sql", "GET", { question });
+    if (sqlMsg.type === "sql") {
+      window.location.hash = sqlMsg.id;
+      messages.push(sqlMsg);
+
+      const dfMsg = await newApiRequest("run_sql", "GET", { id: sqlMsg.id });
+      if (dfMsg.type === "df") {
+        messages.push(dfMsg);
+
+        const plotMsg = await newApiRequest("generate_plotly_figure", "GET", {
+          id: dfMsg.id,
+        });
+        if (plotMsg.type === "plotly_figure") {
+          messages.push(plotMsg);
+
+          questionHistory = [...questionHistory, { question, id: plotMsg.id }];
+
+          const followupMsg = await newApiRequest(
+            "generate_followup_questions",
+            "GET",
+            { id: plotMsg.id }
+          );
+
+          messages.push(followupMsg);
         }
-      });
+      }
+    }
+
+    await playMessageSequence(messages);
   }
 
   function rerunSql(id: string) {
@@ -255,7 +277,7 @@
         top: document.body.scrollHeight,
         behavior: "smooth",
       });
-    }, 100);
+    }, 300);
   }
 
   function findQuestionSql() {
@@ -310,7 +332,6 @@
       {messageLog}
       {newQuestion}
       {rerunSql}
-      {clearMessages}
       {onUpdateSql}
       bind:question_asked
       bind:thinking

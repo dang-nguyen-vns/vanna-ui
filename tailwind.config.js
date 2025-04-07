@@ -41,7 +41,7 @@ export default {
         accent: "#22c55e",
       },
       maxWidth: {
-        "4xl": "1500px",
+        "4xl": "1000px",
       },
     },
   },

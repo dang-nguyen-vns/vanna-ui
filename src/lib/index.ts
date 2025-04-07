@@ -9,7 +9,7 @@ export { default as DataFrame } from "./DataFrame.svelte";
 export { default as DownloadButton } from "./DownloadButton.svelte";
 export { default as Error } from "./Error.svelte";
 export { default as Feedback } from "./Feedback.svelte";
-export { default as GreenButton } from "./GreenButton.svelte";
+export { default as GreenButton } from "./ActionButton.svelte";
 export { default as InChatButton } from "./InChatButton.svelte";
 export { default as NewTrainingData } from "./NewTrainingData.svelte";
 export { default as Plotly } from "./Plotly.svelte";

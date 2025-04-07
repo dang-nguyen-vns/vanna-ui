@@ -9,7 +9,7 @@
     }
   };
 
-  setInterval(revealNextWord, 0.1); // Change 1000 to the desired interval in milliseconds
+  setInterval(revealNextWord, 1); // Change 1000 to the desired interval in milliseconds
 </script>
 
 {#each words as word, index}
